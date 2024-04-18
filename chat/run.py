@@ -24,26 +24,12 @@ def run(job: InputSchema, cfg: dict = None, **kwargs):
         json=data
     )
 
-    response.raise_for_status()
-    response_json = response.json()
 
-    return response_json['response']
+    return response
 
 if __name__ == "__main__":
     job = InputSchema(
-        model='gemma',
-        prompt='tell me a joke',
-    )
-    print(run(job))
-
-    job = InputSchema(
-        model='mistral',
-        prompt='tell me a joke',
-    )
-    print(run(job))
-
-    job = InputSchema(
-        model='qwen',
+        model='phi',
         prompt='tell me a joke',
     )
     print(run(job))
