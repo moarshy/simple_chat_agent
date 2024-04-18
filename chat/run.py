@@ -1,6 +1,6 @@
 import requests
-from run_ollama.schemas import InputSchema
-from run_ollama.utils import get_logger
+from chat.schemas import InputSchema
+from chat.utils import get_logger
 
 
 logger = get_logger(__name__)

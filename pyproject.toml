@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "run-ollama"
+name = "chat"
 version = "0.1.0"
 description = ""
 authors = ["moarshy <marshath@gmail.com>"]
 readme = "README.md"
 packages = [
-    {include = "run_ollama", from="."}
+    {include = "chat", from="."}
 ]
 
 [tool.poetry.dependencies]
