@@ -1,0 +1,19 @@
+[tool.poetry]
+name = "run-ollama"
+version = "0.1.0"
+description = ""
+authors = ["moarshy <marshath@gmail.com>"]
+readme = "README.md"
+packages = [
+    {include = "run_ollama", from="."}
+]
+
+[tool.poetry.dependencies]
+python = "^3.10"
+requests = "^2.31.0"
+pydantic = "^2.7.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
