@@ -12,7 +12,7 @@ models:
     temperature: 0
     api_base: http://localhost:11434
   vllm:
-    model: facebook/opt-125m
+    model: openai/facebook/opt-125m
     api_base: http://localhost:8000/v1
 
 inputs:
