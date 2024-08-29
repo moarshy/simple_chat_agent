@@ -1,36 +1,55 @@
-import requests
+#!/usr/bin/env python
+
 from chat.schemas import InputSchema
 from chat.utils import get_logger
-
+import json
+from litellm import completion, text_completion
+import yaml
 
 logger = get_logger(__name__)
 
-OLLAMA_ENDPOINT = 'http://localhost:11434/api/generate'
-
-
-def run(job: InputSchema, cfg: dict = None, **kwargs):
-    logger.info(f"Running job {job.model} {job.prompt}")
+def run(inputs: InputSchema, worker_nodes = None, orchestrator_node = None, flow_run = None, cfg: dict = None):
+    logger.info(f"Running with inputs {inputs.prompt}")
     logger.info(f"cfg: {cfg}")
 
+    if inputs.llm_backend == "ollama":
+        prompt = inputs.prompt
+        messages = [
+            {"role": "system", "content": cfg["inputs"]["system_message"]},
+            {"role": "user", "content": prompt},
+        ]
+        response = completion(
+            model=cfg["models"]["ollama"]["model"],
+            messages=messages,
+            temperature=cfg["models"]["ollama"]["temperature"],
+            max_tokens=cfg["models"]["ollama"]["max_tokens"],
+            api_base=cfg["models"]["ollama"]["api_base"],
+        )
 
-    data = {
-        'model': job.model,
-        'prompt': job.prompt,
-        'stream': False
-    }
+        response = response.choices[0].message["content"]
+        logger.info(f"Response: {response}")
 
-    response = requests.post(
-        OLLAMA_ENDPOINT,
-        json=data
-    )
+    elif inputs.llm_backend == "vllm":
+        response = text_completion(
+            model=cfg["models"]["vllm"]["model"],
+            prompt=inputs.prompt,
+            api_base=cfg["models"]["vllm"]["api_base"],
+        )
 
+        response = response.choices[0].text
+        logger.info(f"Response: {response}")
 
     return response
 
 if __name__ == "__main__":
-    job = InputSchema(
-        model='phi',
+
+    cfg_path = f"chat/component.yaml"
+    with open(cfg_path, "r") as file:
+        cfg = yaml.load(file, Loader=yaml.FullLoader)
+
+    inputs = InputSchema(
         prompt='tell me a joke',
     )
-    print(run(job))
+    response = run(inputs, cfg)
+
 
