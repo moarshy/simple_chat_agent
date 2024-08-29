@@ -2,7 +2,6 @@
 
 from chat.schemas import InputSchema
 from chat.utils import get_logger
-import json
 from litellm import completion, text_completion
 import yaml
 
