@@ -2,7 +2,7 @@
 
 from chat.schemas import InputSchema
 from chat.utils import get_logger
-from litellm import completion, text_completion
+from litellm import completion
 import yaml
 
 logger = get_logger(__name__)
@@ -29,13 +29,20 @@ def run(inputs: InputSchema, worker_nodes = None, orchestrator_node = None, flow
         logger.info(f"Response: {response}")
 
     elif inputs.llm_backend == "vllm":
-        response = text_completion(
+        messages = [
+            {"role": "system", "content": cfg["inputs"]["system_message"]},
+            {"role": "user", "content": inputs.prompt}
+        ]
+        response = completion(
             model=cfg["models"]["vllm"]["model"],
-            prompt=inputs.prompt,
+            messages=messages,
             api_base=cfg["models"]["vllm"]["api_base"],
+            api_key = "EMPTY",
+            temperature=cfg["models"]["vllm"]["temperature"],
+            max_tokens=cfg["models"]["vllm"]["max_tokens"],
         )
 
-        response = response.choices[0].text
+        response = response.choices[0].message.content
         logger.info(f"Response: {response}")
 
     return response

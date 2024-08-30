@@ -12,8 +12,10 @@ models:
     temperature: 0
     api_base: http://localhost:11434
   vllm:
-    model: openai/facebook/opt-125m
+    model: openai/NousResearch/Hermes-3-Llama-3.1-8B
     api_base: http://localhost:8000/v1
+    max_tokens: 1000
+    temperature: 0
 
 inputs:
     system_message: "You are a helpful AI assistant."
