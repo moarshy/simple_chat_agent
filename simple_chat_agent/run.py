@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 
-from chat.schemas import InputSchema
-from chat.utils import get_logger
+from simple_chat_agent.schemas import InputSchema
+from simple_chat_agent.utils import get_logger
 from litellm import completion
 import yaml
 
@@ -49,7 +49,7 @@ def run(inputs: InputSchema, worker_nodes = None, orchestrator_node = None, flow
 
 if __name__ == "__main__":
 
-    cfg_path = f"chat/component.yaml"
+    cfg_path = f"simple_chat_agent/component.yaml"
     with open(cfg_path, "r") as file:
         cfg = yaml.load(file, Loader=yaml.FullLoader)
 

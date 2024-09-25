@@ -1,7 +1,7 @@
-name: chat
+name: simple_chat_agent
 author: naptha
 version: 0.1.0
-description: A tool interacting with a chat assistant.
+description: A simple chat agent.
 license: MIT
 
 models:

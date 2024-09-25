@@ -1,11 +1,11 @@
 [tool.poetry]
-name = "chat"
+name = "simple-chat-agent"
 version = "0.1.0"
 description = ""
 authors = ["moarshy <marshath@gmail.com>"]
 readme = "README.md"
 packages = [
-    {include = "chat", from="."}
+    {include = "simple_chat_agent", from="."}
 ]
 
 [tool.poetry.dependencies]
