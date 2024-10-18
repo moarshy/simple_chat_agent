@@ -12,39 +12,24 @@ def run(inputs: InputSchema, *args, **kwargs):
     cfg = kwargs["cfg"]
     logger.info(f"cfg: {cfg}")
 
-    if inputs.llm_backend == "ollama":
-        prompt = inputs.prompt
-        messages = [
-            {"role": "system", "content": cfg["inputs"]["system_message"]},
-            {"role": "user", "content": prompt},
-        ]
-        response = completion(
-            model=cfg["models"]["ollama"]["model"],
-            messages=messages,
-            temperature=cfg["models"]["ollama"]["temperature"],
-            max_tokens=cfg["models"]["ollama"]["max_tokens"],
-            api_base=cfg["models"]["ollama"]["api_base"],
-        )
+    messages = [
+        {"role": "system", "content": cfg["inputs"]["system_message"]},
+        {"role": "user", "content": inputs.prompt},
+    ]
 
-        response = response.choices[0].message["content"]
-        logger.info(f"Response: {response}")
+    api_key = None if inputs.llm_backend == "ollama" else "EMPTY"
 
-    elif inputs.llm_backend == "vllm":
-        messages = [
-            {"role": "system", "content": cfg["inputs"]["system_message"]},
-            {"role": "user", "content": inputs.prompt}
-        ]
-        response = completion(
-            model=cfg["models"]["vllm"]["model"],
-            messages=messages,
-            api_base=cfg["models"]["vllm"]["api_base"],
-            api_key = "EMPTY",
-            temperature=cfg["models"]["vllm"]["temperature"],
-            max_tokens=cfg["models"]["vllm"]["max_tokens"],
-        )
+    response = completion(
+        model=cfg["models"][inputs.llm_backend]["model"],
+        messages=messages,
+        temperature=cfg["models"][inputs.llm_backend]["temperature"],
+        max_tokens=cfg["models"][inputs.llm_backend]["max_tokens"],
+        api_base=cfg["models"][inputs.llm_backend]["api_base"],
+        api_key=api_key
+    )
 
-        response = response.choices[0].message.content
-        logger.info(f"Response: {response}")
+    response = response.choices[0].message.content
+    logger.info(f"Response: {response}")
 
     return response
 
