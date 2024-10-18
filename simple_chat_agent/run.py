@@ -8,20 +8,18 @@ import yaml
 logger = get_logger(__name__)
 
 def run(inputs: InputSchema, *args, **kwargs):
-    logger.info(f"Running with inputs {inputs.prompt}")
+    logger.info(f"Running with inputs {inputs.messages}")
     cfg = kwargs["cfg"]
     logger.info(f"cfg: {cfg}")
 
-    messages = [
-        {"role": "system", "content": cfg["inputs"]["system_message"]},
-        {"role": "user", "content": inputs.prompt},
-    ]
+    messages = [msg for msg in inputs.messages if msg["role"] != "system"]
+    messages.insert(0, {"role": "system", "content": cfg["inputs"]["system_message"]})
 
     api_key = None if inputs.llm_backend == "ollama" else "EMPTY"
 
     response = completion(
         model=cfg["models"][inputs.llm_backend]["model"],
-        messages=messages,
+        messages=inputs.messages,
         temperature=cfg["models"][inputs.llm_backend]["temperature"],
         max_tokens=cfg["models"][inputs.llm_backend]["max_tokens"],
         api_base=cfg["models"][inputs.llm_backend]["api_base"],
@@ -31,7 +29,9 @@ def run(inputs: InputSchema, *args, **kwargs):
     response = response.choices[0].message.content
     logger.info(f"Response: {response}")
 
-    return response
+    messages.append({"role": "assistant", "content": response})
+
+    return messages
 
 if __name__ == "__main__":
 
