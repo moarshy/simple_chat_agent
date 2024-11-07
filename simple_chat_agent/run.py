@@ -1,9 +1,12 @@
 #!/usr/bin/env python
-
+from dotenv import load_dotenv
+import os
 from simple_chat_agent.schemas import InputSchema
 from simple_chat_agent.utils import get_logger
 from litellm import completion
 import yaml
+
+load_dotenv()
 
 logger = get_logger(__name__)
 
@@ -15,7 +18,7 @@ def run(inputs: InputSchema, *args, **kwargs):
     messages = [msg for msg in inputs.messages if msg["role"] != "system"]
     messages.insert(0, {"role": "system", "content": cfg["inputs"]["system_message"]})
 
-    api_key = None if inputs.llm_backend == "ollama" else "EMPTY"
+    api_key = None if inputs.llm_backend == "ollama" else ("EMPTY" if inputs.llm_backend == "vllm" else os.getenv("OPENAI_API_KEY"))
 
     response = completion(
         model=cfg["models"][inputs.llm_backend]["model"],
@@ -39,9 +42,14 @@ if __name__ == "__main__":
     with open(cfg_path, "r") as file:
         cfg = yaml.load(file, Loader=yaml.FullLoader)
 
+    messages = [
+        {"role": "user", "content": "tell me a joke"},
+    ]
+
     inputs = InputSchema(
-        prompt='tell me a joke',
+        messages=messages,
+        llm_backend="openai"
     )
-    response = run(inputs, cfg)
+    response = run(inputs, cfg=cfg)
 
 

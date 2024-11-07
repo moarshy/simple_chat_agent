@@ -16,6 +16,11 @@ models:
     api_base: http://localhost:8000/v1
     max_tokens: 1000
     temperature: 0
+  openai:
+    model: gpt-4o
+    api_base: https://api.openai.com/v1
+    max_tokens: 1000
+    temperature: 0
 
 inputs:
     system_message: "You are a helpful AI assistant."
