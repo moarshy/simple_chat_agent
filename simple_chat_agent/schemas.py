@@ -1,5 +1,6 @@
 from pydantic import BaseModel
 
 class InputSchema(BaseModel):
-    messages: list
+    tool_name: str
+    tool_input_data: list
     llm_backend: str = "ollama"

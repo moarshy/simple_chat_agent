@@ -10,31 +10,46 @@ load_dotenv()
 
 logger = get_logger(__name__)
 
+class SimpleChatAgent:
+
+    def __init__(self, cfg: dict):
+        self.cfg = cfg
+
+    def chat(self, inputs: InputSchema):
+
+        messages = [msg for msg in inputs.tool_input_data if msg["role"] != "system"]
+        messages.insert(0, {"role": "system", "content": self.cfg["inputs"]["system_message"]})
+
+        api_key = None if inputs.llm_backend == "ollama" else ("EMPTY" if inputs.llm_backend == "vllm" else os.getenv("OPENAI_API_KEY"))
+
+        response = completion(
+            model=self.cfg["models"][inputs.llm_backend]["model"],
+            messages=messages,
+            temperature=self.cfg["models"][inputs.llm_backend]["temperature"],
+            max_tokens=self.cfg["models"][inputs.llm_backend]["max_tokens"],
+            api_base=self.cfg["models"][inputs.llm_backend]["api_base"],
+            api_key=api_key
+        )
+
+        response = response.choices[0].message.content
+        logger.info(f"Response: {response}")
+
+        messages.append({"role": "assistant", "content": response})
+
+        return messages
+
 def run(inputs: InputSchema, *args, **kwargs):
-    logger.info(f"Running with inputs {inputs.messages}")
+    logger.info(f"Running with inputs {inputs.tool_input_data}")
     cfg = kwargs["cfg"]
     logger.info(f"cfg: {cfg}")
 
-    messages = [msg for msg in inputs.messages if msg["role"] != "system"]
-    messages.insert(0, {"role": "system", "content": cfg["inputs"]["system_message"]})
+    simple_chat_agent = SimpleChatAgent(cfg)
 
-    api_key = None if inputs.llm_backend == "ollama" else ("EMPTY" if inputs.llm_backend == "vllm" else os.getenv("OPENAI_API_KEY"))
+    method = getattr(simple_chat_agent, inputs.tool_name, None)
 
-    response = completion(
-        model=cfg["models"][inputs.llm_backend]["model"],
-        messages=inputs.messages,
-        temperature=cfg["models"][inputs.llm_backend]["temperature"],
-        max_tokens=cfg["models"][inputs.llm_backend]["max_tokens"],
-        api_base=cfg["models"][inputs.llm_backend]["api_base"],
-        api_key=api_key
-    )
+    return method(inputs)
 
-    response = response.choices[0].message.content
-    logger.info(f"Response: {response}")
 
-    messages.append({"role": "assistant", "content": response})
-
-    return messages
 
 if __name__ == "__main__":
 
@@ -47,7 +62,8 @@ if __name__ == "__main__":
     ]
 
     inputs = InputSchema(
-        messages=messages,
+        tool_name="chat",
+        tool_input_data=messages,
         llm_backend="openai"
     )
     response = run(inputs, cfg=cfg)
