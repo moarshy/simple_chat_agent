@@ -1,9 +1,10 @@
 #!/usr/bin/env python
 from dotenv import load_dotenv
+import json
 from litellm import completion
 from naptha_sdk.schemas import AgentDeployment
 import os
-from simple_chat_agent.schemas import InputSchema
+from simple_chat_agent.schemas import InputSchema, SystemPromptSchema
 from simple_chat_agent.utils import get_logger
 
 load_dotenv()
@@ -14,11 +15,14 @@ class SimpleChatAgent:
 
     def __init__(self, agent_deployment: AgentDeployment):
         self.agent_deployment = agent_deployment
+        self.system_prompt = SystemPromptSchema(role=agent_deployment.agent_config.system_prompt["role"], persona=agent_deployment.agent_config.persona_module["data"])
 
     def chat(self, inputs: InputSchema):
-
-        messages = [msg for msg in inputs.tool_input_data if msg["role"] != "system"]
-        messages.insert(0, {"role": "system", "content": self.agent_deployment.agent_config.system_prompt.model_dump_json()})
+        if isinstance(inputs.tool_input_data, list):
+            messages = [msg for msg in inputs.tool_input_data if msg["role"] != "system"]
+        elif isinstance(inputs.tool_input_data, str):
+            messages = [{"role": "user", "content": inputs.tool_input_data}]
+        messages.insert(0, {"role": "system", "content": json.dumps(self.agent_deployment.agent_config.system_prompt)})
 
         api_key = None if self.agent_deployment.agent_config.llm_config.client == "ollama" else ("EMPTY" if self.agent_deployment.agent_config.llm_config.client == "vllm" else os.getenv("OPENAI_API_KEY"))
 
@@ -57,7 +61,6 @@ if __name__ == "__main__":
 
     # Configs
     agent_deployments = load_agent_deployments("simple_chat_agent/configs/agent_deployments.json")
-
 
     input_params = InputSchema(
         tool_name="chat",
