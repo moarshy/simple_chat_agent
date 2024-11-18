@@ -2,7 +2,7 @@
 from dotenv import load_dotenv
 import json
 from litellm import completion
-from naptha_sdk.schemas import AgentDeployment
+from naptha_sdk.schemas import AgentDeployment, AgentRunInput
 import os
 from simple_chat_agent.schemas import InputSchema, SystemPromptSchema
 from simple_chat_agent.utils import get_logger
@@ -42,19 +42,18 @@ class SimpleChatAgent:
 
         return messages
 
-def run(inputs: InputSchema, agent_deployment: AgentDeployment, *args, **kwargs):
-    logger.info(f"Running with inputs {inputs.tool_input_data}")
+def run(agent_run: AgentRunInput, *args, **kwargs):
+    logger.info(f"Running with inputs {agent_run.inputs.tool_input_data}")
 
-    simple_chat_agent = SimpleChatAgent(agent_deployment)
+    simple_chat_agent = SimpleChatAgent(agent_run.agent_deployment)
 
-    method = getattr(simple_chat_agent, inputs.tool_name, None)
+    method = getattr(simple_chat_agent, agent_run.inputs.tool_name, None)
 
-    return method(inputs)
+    return method(agent_run.inputs)
 
 
 if __name__ == "__main__":
     from naptha_sdk.client.naptha import Naptha
-    from naptha_sdk.schemas import AgentRunInput
     from naptha_sdk.configs import load_agent_deployments
 
     naptha = Naptha()
@@ -73,6 +72,6 @@ if __name__ == "__main__":
         consumer_id=naptha.user.id,
     )
 
-    response = run(input_params, agent_deployments[0], naptha.user.id)
+    response = run(agent_run)
 
 
