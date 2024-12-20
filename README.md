@@ -83,19 +83,19 @@ git push --tags
 If creating an agent module, you can register it on the Naptha Hub using:
 
 ```bash
-naptha agents agent_name -p "description='Agent description' url='ipfs://QmNer9SRKmJPv4Ae3vdVYo6eFjPcyJ8uZ2rRSYd3koT6jg' type='package' version='0.1'" 
+naptha agents agent_name -p "description='Agent description' module_url='ipfs://QmNer9SRKmJPv4Ae3vdVYo6eFjPcyJ8uZ2rRSYd3koT6jg'" 
 ```
 
 If creating an orchestrator module, you can register it on the Naptha Hub using:
 
 ```bash
-naptha orchestrators orchestrator_name -p "description='Orchestrator description' url='ipfs://QmNer9SRKmJPv4Ae3vdVYo6eFjPcyJ8uZ2rRSYd3koT6jg' type='package' version='0.1'" 
+naptha orchestrators orchestrator_name -p "description='Orchestrator description' module_url='ipfs://QmNer9SRKmJPv4Ae3vdVYo6eFjPcyJ8uZ2rRSYd3koT6jg'" 
 ```
 
 If creating an environment module, you can register it on the Naptha Hub using:
 
 ```bash
-naptha environments environment_name -p "description='Environment description' url='ipfs://QmNer9SRKmJPv4Ae3vdVYo6eFjPcyJ8uZ2rRSYd3koT6jg' type='package' version='0.1'" 
+naptha environments environment_name -p "description='Environment description' module_url='ipfs://QmNer9SRKmJPv4Ae3vdVYo6eFjPcyJ8uZ2rRSYd3koT6jg'" 
 ```
 
-Make sure to replace the placeholder descriptions and URLs with your own.
+Make sure to replace the placeholder descriptions and module URLs with your own.
