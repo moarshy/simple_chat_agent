@@ -1,15 +1,15 @@
 #!/usr/bin/env python
+import logging
 from dotenv import load_dotenv
 import json
 from litellm import completion
 from naptha_sdk.schemas import AgentDeployment, AgentRunInput
 import os
 from simple_chat_agent.schemas import InputSchema, SystemPromptSchema
-from simple_chat_agent.utils import get_logger
 
 load_dotenv()
 
-logger = get_logger(__name__)
+logger = logging.getLogger(__name__)
 
 class SimpleChatAgent:
 
