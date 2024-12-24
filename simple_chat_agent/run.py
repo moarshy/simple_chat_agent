@@ -45,7 +45,7 @@ class SimpleChatAgent:
 def run(agent_run: AgentRunInput, *args, **kwargs):
     logger.info(f"Running with inputs {agent_run.inputs.tool_input_data}")
 
-    simple_chat_agent = SimpleChatAgent(agent_run.agent_deployment)
+    simple_chat_agent = SimpleChatAgent(agent_run.deployment)
 
     method = getattr(simple_chat_agent, agent_run.inputs.tool_name, None)
 
