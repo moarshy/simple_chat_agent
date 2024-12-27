@@ -13,25 +13,25 @@ logger = logging.getLogger(__name__)
 
 class SimpleChatAgent:
 
-    def __init__(self, agent_deployment: AgentDeployment):
-        self.agent_deployment = agent_deployment
-        self.system_prompt = SystemPromptSchema(role=agent_deployment.config.system_prompt["role"], persona=agent_deployment.config.persona_module["data"])
+    def __init__(self, deployment: AgentDeployment):
+        self.deployment = deployment
+        self.system_prompt = SystemPromptSchema(role=deployment.config.system_prompt["role"], persona=deployment.config.persona_module["data"])
 
     def chat(self, inputs: InputSchema):
         if isinstance(inputs.tool_input_data, list):
             messages = [msg for msg in inputs.tool_input_data if msg["role"] != "system"]
         elif isinstance(inputs.tool_input_data, str):
             messages = [{"role": "user", "content": inputs.tool_input_data}]
-        messages.insert(0, {"role": "system", "content": json.dumps(self.agent_deployment.config.system_prompt)})
+        messages.insert(0, {"role": "system", "content": json.dumps(self.deployment.config.system_prompt)})
 
-        api_key = None if self.agent_deployment.config.llm_config.client == "ollama" else ("EMPTY" if self.agent_deployment.config.llm_config.client == "vllm" else os.getenv("OPENAI_API_KEY"))
+        api_key = None if self.deployment.config.llm_config.client == "ollama" else ("EMPTY" if self.deployment.config.llm_config.client == "vllm" else os.getenv("OPENAI_API_KEY"))
 
         response = completion(
-            model=self.agent_deployment.config.llm_config.model,
+            model=self.deployment.config.llm_config.model,
             messages=messages,
-            temperature=self.agent_deployment.config.llm_config.temperature,
-            max_tokens=self.agent_deployment.config.llm_config.max_tokens,
-            api_base=self.agent_deployment.config.llm_config.api_base,
+            temperature=self.deployment.config.llm_config.temperature,
+            max_tokens=self.deployment.config.llm_config.max_tokens,
+            api_base=self.deployment.config.llm_config.api_base,
             api_key=api_key
         )
 
@@ -45,7 +45,7 @@ class SimpleChatAgent:
 def run(module_run: AgentRunInput, *args, **kwargs):
     logger.info(f"Running with inputs {module_run.inputs.tool_input_data}")
 
-    simple_chat_agent = SimpleChatAgent(module_run.agent_deployment)
+    simple_chat_agent = SimpleChatAgent(module_run.deployment)
 
     method = getattr(simple_chat_agent, module_run.inputs.tool_name, None)
 
@@ -68,7 +68,7 @@ if __name__ == "__main__":
 
     module_run = AgentRunInput(
         inputs=input_params,
-        agent_deployment=agent_deployments[0],
+        deployment=agent_deployments[0],
         consumer_id=naptha.user.id,
     )
 
