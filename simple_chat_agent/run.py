@@ -28,7 +28,7 @@ class SimpleChatAgent:
         response = await self.node.run_inference({"model": self.deployment.config.llm_config.model,
                                                     "messages": messages})
 
-        response = response["choices"][0]["message"]["content"]
+        response = response.choices[0].message.content
         logger.info(f"Response: {response}")
 
         messages.append({"role": "assistant", "content": response})
