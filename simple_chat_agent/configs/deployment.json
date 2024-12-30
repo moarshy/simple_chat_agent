@@ -6,7 +6,7 @@
         "config": {
             "config_name": "agent_config_1",
             "llm_config": {"config_name": "model_2"},
-            "persona_module" : {"module_url": "https://huggingface.co/datasets/richardblythman/characterfile_richardblythman"},
+            "persona_module" : {"name": "richard_twitter"},
             "system_prompt": {
                 "role": "You are a helpful AI assistant.",
                 "persona": ""
