@@ -54,7 +54,7 @@ if __name__ == "__main__":
 
     naptha = Naptha()
 
-    deployment = asyncio.run(setup_module_deployment("agent", "simple_chat_agent/configs/deployment.json", node_url = os.getenv("NODE_URL"), load_persona_data=True, load_persona_schema=True))
+    deployment = asyncio.run(setup_module_deployment("agent", "simple_chat_agent/configs/deployment.json", node_url = os.getenv("NODE_URL"), load_persona_data=True))
 
     input_params = InputSchema(
         tool_name="chat",
