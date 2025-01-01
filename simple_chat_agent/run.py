@@ -26,7 +26,9 @@ class SimpleChatAgent:
         messages.insert(0, {"role": "system", "content": json.dumps(self.deployment.config.system_prompt)})
 
         response = await self.node.run_inference({"model": self.deployment.config.llm_config.model,
-                                                    "messages": messages})
+                                                    "messages": messages,
+                                                    "temperature": self.deployment.config.llm_config.temperature,
+                                                    "max_tokens": self.deployment.config.llm_config.max_tokens})
 
         response = response.choices[0].message.content
         logger.info(f"Response: {response}")
