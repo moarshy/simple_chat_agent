@@ -33,7 +33,10 @@ class SimpleChatAgent:
                                                     "temperature": self.deployment.config.llm_config.temperature,
                                                     "max_tokens": self.deployment.config.llm_config.max_tokens})
 
-        response = response.choices[0].message.content
+        if isinstance(response, dict):
+            response = response['choices'][0]['message']['content']
+        else:
+            response = response.choices[0].message.content
         logger.info(f"Response: {response}")
 
         messages.append({"role": "assistant", "content": response})
