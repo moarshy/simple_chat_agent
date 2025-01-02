@@ -3,7 +3,7 @@ import logging
 from dotenv import load_dotenv
 import json
 from naptha_sdk.schemas import AgentDeployment, AgentRunInput
-from naptha_sdk.client.node import Node
+from naptha_sdk.inference import InferenceClient
 import os
 from simple_chat_agent.schemas import InputSchema, SystemPromptSchema
 
@@ -16,7 +16,7 @@ class SimpleChatAgent:
     def __init__(self, deployment: AgentDeployment):
         self.deployment = deployment
         self.system_prompt = SystemPromptSchema(role=deployment.config.system_prompt["role"], persona=deployment.config.system_prompt["persona"])
-        self.node = Node(self.deployment.node)
+        self.node = InferenceClient(self.deployment.node)
 
     async def chat(self, inputs: InputSchema):
         if isinstance(inputs.tool_input_data, list):
