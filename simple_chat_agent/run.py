@@ -3,7 +3,7 @@ import logging
 from dotenv import load_dotenv
 import json
 from naptha_sdk.schemas import AgentDeployment, AgentRunInput
-from naptha_sdk.client.node import Node
+from naptha_sdk.inference import InferenceClient
 import os
 from simple_chat_agent.schemas import InputSchema, SystemPromptSchema
 
@@ -15,8 +15,11 @@ class SimpleChatAgent:
 
     def __init__(self, deployment: AgentDeployment):
         self.deployment = deployment
-        self.system_prompt = SystemPromptSchema(role=deployment.config.system_prompt["role"], persona=deployment.config.system_prompt["persona"])
-        self.node = Node(self.deployment.node)
+        if deployment.config.persona_module and deployment.config.persona_module['data']:
+            self.system_prompt = SystemPromptSchema(role=deployment.config.system_prompt["role"], persona=deployment.config.system_prompt["persona"])
+        else:
+            self.system_prompt = SystemPromptSchema(role=deployment.config.system_prompt["role"])
+        self.node = InferenceClient(self.deployment.node)
 
     async def chat(self, inputs: InputSchema):
         if isinstance(inputs.tool_input_data, list):
@@ -30,7 +33,10 @@ class SimpleChatAgent:
                                                     "temperature": self.deployment.config.llm_config.temperature,
                                                     "max_tokens": self.deployment.config.llm_config.max_tokens})
 
-        response = response.choices[0].message.content
+        if isinstance(response, dict):
+            response = response['choices'][0]['message']['content']
+        else:
+            response = response.choices[0].message.content
         logger.info(f"Response: {response}")
 
         messages.append({"role": "assistant", "content": response})
