@@ -15,8 +15,8 @@ class SimpleChatAgent:
 
     def __init__(self, deployment: AgentDeployment):
         self.deployment = deployment
-        if deployment.config["persona_module"] and deployment.config["persona_module"]['data']:
-            self.system_prompt = SystemPromptSchema(role=deployment.config.system_prompt["role"], persona=deployment.config["persona_module"]['data'])
+        if deployment.config.persona_module and deployment.config.persona_module['data']:
+            self.system_prompt = SystemPromptSchema(role=deployment.config.system_prompt["role"], persona=deployment.config.persona_module['data'])
         else:
             self.system_prompt = SystemPromptSchema(role=deployment.config.system_prompt["role"])
         self.node = InferenceClient(self.deployment.node)
