@@ -1,11 +1,12 @@
 #!/usr/bin/env python
-import logging
 from dotenv import load_dotenv
 import json
-from naptha_sdk.schemas import AgentDeployment, AgentRunInput
-from naptha_sdk.inference import InferenceClient
+import logging
 import os
 from simple_chat_agent.schemas import InputSchema, SystemPromptSchema
+from typing import Dict
+from naptha_sdk.schemas import AgentDeployment, AgentRunInput
+from naptha_sdk.inference import InferenceClient
 
 load_dotenv()
 
@@ -45,9 +46,9 @@ class SimpleChatAgent:
 
         return messages
 
-async def run(module_run: AgentRunInput, *args, **kwargs):
-    logger.info(f"Running with inputs {module_run.inputs.tool_input_data}")
-
+async def run(module_run: Dict, *args, **kwargs):
+    module_run = AgentRunInput(**module_run)
+    module_run.inputs = InputSchema(**module_run.inputs)
     simple_chat_agent = SimpleChatAgent(module_run.deployment)
 
     method = getattr(simple_chat_agent, module_run.inputs.tool_name, None)
