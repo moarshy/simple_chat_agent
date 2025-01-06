@@ -65,17 +65,17 @@ if __name__ == "__main__":
 
     deployment = asyncio.run(setup_module_deployment("agent", "simple_chat_agent/configs/deployment.json", node_url = os.getenv("NODE_URL"), load_persona_data=True))
 
-    input_params = InputSchema(
-        tool_name="chat",
-        tool_input_data=[{"role": "user", "content": "tell me a joke"}],
-    )
+    input_params = {
+        "tool_name": "chat",
+        "tool_input_data": [{"role": "user", "content": "tell me a joke"}],
+    }
 
-    module_run = AgentRunInput(
-        inputs=input_params,
-        deployment=deployment,
-        consumer_id=naptha.user.id,
-    )
+    module_run = {
+        "inputs": input_params,
+        "deployment": deployment,
+        "consumer_id": naptha.user.id,
+    }
 
     response = asyncio.run(run(module_run))
 
-    print("RESPONSE", response)
+    print("Response: ", response)
