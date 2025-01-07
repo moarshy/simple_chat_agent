@@ -7,6 +7,7 @@ from simple_chat_agent.schemas import InputSchema, SystemPromptSchema
 from typing import Dict
 from naptha_sdk.schemas import AgentDeployment, AgentRunInput
 from naptha_sdk.inference import InferenceClient
+from naptha_sdk.utils import sign_consumer_id
 
 load_dotenv()
 
@@ -74,6 +75,7 @@ if __name__ == "__main__":
         "inputs": input_params,
         "deployment": deployment,
         "consumer_id": naptha.user.id,
+        "signature": sign_consumer_id(naptha.user.id, os.getenv("PRIVATE_KEY"))
     }
 
     response = asyncio.run(run(module_run))
