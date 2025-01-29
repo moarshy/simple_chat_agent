@@ -30,6 +30,8 @@ class SimpleChatAgent:
             messages = [{"role": "user", "content": inputs.tool_input_data}]
         messages.insert(0, {"role": "system", "content": json.dumps(self.deployment.config.system_prompt)})
 
+        logger.info(f"AAAAAAAA: {os.getenv('OPENAI_API_KEY')}")
+
         response = await self.node.run_inference({"model": self.deployment.config.llm_config.model,
                                                     "messages": messages,
                                                     "temperature": self.deployment.config.llm_config.temperature,
